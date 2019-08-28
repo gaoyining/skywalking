@@ -94,10 +94,10 @@ public class RunningRule {
 //                return;
 //            }
 
-            if(!includeNames.stream().anyMatch(includeName -> {
+            if (!includeNames.stream().anyMatch(includeName -> {
                 meta.getName().contains(includeName);
                 return true;
-            })){
+            })) {
                 return;
             }
         }
