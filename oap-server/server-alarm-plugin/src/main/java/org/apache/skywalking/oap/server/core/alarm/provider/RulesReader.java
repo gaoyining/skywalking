@@ -56,7 +56,7 @@ public class RulesReader {
                         if (metricsName == null) {
                             throw new IllegalArgumentException("metrics-name can't be null");
                         }
-
+                        alarmRule.setServiceGroup((String)settings.get("serviceGroup"));
                         alarmRule.setMetricsName((String)metricsName);
                         alarmRule.setIncludeNames((ArrayList)settings.getOrDefault("include-names", new ArrayList(0)));
                         alarmRule.setThreshold(settings.get("threshold").toString());

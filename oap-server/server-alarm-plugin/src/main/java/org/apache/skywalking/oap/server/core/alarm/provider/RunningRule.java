@@ -90,7 +90,14 @@ public class RunningRule {
         }
 
         if (CollectionUtils.isNotEmpty(includeNames)) {
-            if (!includeNames.contains(meta.getName())) {
+//            if (!includeNames.contains(meta.getName())) {
+//                return;
+//            }
+
+            if(!includeNames.stream().anyMatch(includeName -> {
+                meta.getName().contains(includeName);
+                return true;
+            })){
                 return;
             }
         }
