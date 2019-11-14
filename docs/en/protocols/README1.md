@@ -80,39 +80,39 @@ The actual query GraphQL scrips could be found inside `query-protocol` folder in
 Here is the list of all existing metrics names, based on [official_analysis.oal](../../../oap-server/generated-analysis/src/main/resources/official_analysis.oal)
 
 **Global metrics**
-- all_p99, p99所有服务的响应时间
+- all_p99, p99 response time of all services
 - all_p95
 - all_p90
 - all_p75
 - all_p70
-- all_heatmap, 所有服务的响应时间热图
+- all_heatmap, the response time heatmap of all services 
 
 **Service metrics**
-- service_resp_time, 平均服务响应时间
-- service_sla, 服务成功率
-- service_cpm, 每分钟服务调用
-- service_p99, p99服务响应时间
+- service_resp_time, avg response time of service
+- service_sla, successful rate of service
+- service_cpm, calls per minute of service
+- service_p99, p99 response time of service
 - service_p95
 - service_p90
 - service_p75
 - service_p50
 
 **Service instance metrics**
-- service_instance_sla, 服务成功率实例
-- service_instance_resp_time, 服务实例的平均响应时间
-- service_instance_cpm, 服务实例每分钟呼叫
+- service_instance_sla, successful rate of service instance
+- service_instance_resp_time, avg response time of service instance
+- service_instance_cpm, calls per minute of service instance
 
 **Endpoint metrics**
-- endpoint_cpm, 端点每分钟呼叫
-- endpoint_avg, 端点的平均响应时间
-- endpoint_sla, 端点成功率
-- endpoint_p99, p99端点响应时间
+- endpoint_cpm, calls per minute of endpoint
+- endpoint_avg, avg response time of endpoint
+- endpoint_sla, successful rate of endpoint
+- endpoint_p99, p99 response time of endpoint
 - endpoint_p95
 - endpoint_p90
 - endpoint_p75
 - endpoint_p50
 
-**JVM metrics**, JVM相关指标，仅在javaagent处于活动状态时有效
+**JVM metrics**, JVM related metrics, only work when javaagent is active
 - instance_jvm_cpu
 - instance_jvm_memory_heap
 - instance_jvm_memory_noheap
@@ -123,15 +123,15 @@ Here is the list of all existing metrics names, based on [official_analysis.oal]
 - instance_jvm_young_gc_count
 - instance_jvm_old_gc_count
 
-**Service relation metrics**, 表示服务之间的呼叫指标。
-指标ID可以是
-仅进入拓扑查询。
-- service_relation_client_cpm, 在客户端检测到的每分钟呼叫
-- service_relation_server_cpm, 在服务器端检测到的每分钟呼叫
-- service_relation_client_call_sla, 在客户端检测到成功率
-- service_relation_server_call_sla, 在服务器端检测到成功率
-- service_relation_client_resp_time, 在客户端检测到平均响应时间
-- service_relation_server_resp_time, 在服务器端检测到平均响应时间
+**Service relation metrics**, represents the metrics of calls between service. 
+The metrics ID could be
+got in topology query only.
+- service_relation_client_cpm, calls per minute detected at client side
+- service_relation_server_cpm, calls per minute detected at server side
+- service_relation_client_call_sla, successful rate detected at client side
+- service_relation_server_call_sla, successful rate detected at server side
+- service_relation_client_resp_time, avg response time detected at client side
+- service_relation_server_resp_time, avg response time detected at server side
 
 **Endpoint relation metrics**, represents the metrics between dependency endpoints. Only work when tracing agent.
 The metrics ID could be got in topology query only.
