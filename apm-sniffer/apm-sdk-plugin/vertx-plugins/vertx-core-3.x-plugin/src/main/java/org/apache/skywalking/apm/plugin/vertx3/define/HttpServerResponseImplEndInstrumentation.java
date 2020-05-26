@@ -27,43 +27,52 @@ import org.apache.skywalking.apm.agent.core.plugin.match.ClassMatch;
 import org.apache.skywalking.apm.agent.core.plugin.match.NameMatch;
 
 import static net.bytebuddy.matcher.ElementMatchers.named;
+import static org.apache.skywalking.apm.agent.core.plugin.bytebuddy.ArgumentTypeNameMatch.takesArgumentWithType;
 
 /**
- * {@link HttpServerResponseImplEndInstrumentation} enhance the <code>end</code> method
- * in <code>io.vertx.core.http.impl.HttpServerResponseImpl</code> class by
+ * {@link HttpServerResponseImplEndInstrumentation} enhance the <code>end</code> method in
+ * <code>io.vertx.core.http.impl.HttpServerResponseImpl</code> class by
  * <code>HttpServerResponseImplEndInterceptor</code> class
- *
- * @author brandon.fergerson
  */
 public class HttpServerResponseImplEndInstrumentation extends ClassInstanceMethodsEnhancePluginDefine {
 
     private static final String ENHANCE_CLASS = "io.vertx.core.http.impl.HttpServerResponseImpl";
-    private static final String ENHANCE_METHOD = "end";
-    private static final String INTERCEPT_CLASS = "org.apache.skywalking.apm.plugin.vertx3.HttpServerResponseImplEndInterceptor";
+    private static final String INTERCEPTOR_CLASS = "org.apache.skywalking.apm.plugin.vertx3.HttpServerResponseImplEndInterceptor";
 
-    @Override public ConstructorInterceptPoint[] getConstructorsInterceptPoints() {
+    @Override
+    public ConstructorInterceptPoint[] getConstructorsInterceptPoints() {
         return new ConstructorInterceptPoint[0];
     }
 
-    @Override public InstanceMethodsInterceptPoint[] getInstanceMethodsInterceptPoints() {
+    @Override
+    public InstanceMethodsInterceptPoint[] getInstanceMethodsInterceptPoints() {
         return new InstanceMethodsInterceptPoint[] {
             new InstanceMethodsInterceptPoint() {
-                @Override public ElementMatcher<MethodDescription> getMethodsMatcher() {
-                    return named(ENHANCE_METHOD);
+                @Override
+                public ElementMatcher<MethodDescription> getMethodsMatcher() {
+                    return named("end0") //ver. 3.0.0 - 3.5.4
+                            .or(named("end") //ver. 3.6.0 - 3.7.0
+                                    .and(takesArgumentWithType(0, "io.vertx.core.buffer.Buffer")))
+                            .or(named("end") //ver. 3.7.1+
+                                    .and(takesArgumentWithType(0, "io.vertx.core.buffer.Buffer"))
+                                    .and(takesArgumentWithType(1, "io.netty.channel.ChannelPromise")));
                 }
 
-                @Override public String getMethodsInterceptor() {
-                    return INTERCEPT_CLASS;
+                @Override
+                public String getMethodsInterceptor() {
+                    return INTERCEPTOR_CLASS;
                 }
 
-                @Override public boolean isOverrideArgs() {
+                @Override
+                public boolean isOverrideArgs() {
                     return false;
                 }
             }
         };
     }
 
-    @Override protected ClassMatch enhanceClass() {
+    @Override
+    protected ClassMatch enhanceClass() {
         return NameMatch.byName(ENHANCE_CLASS);
     }
 }

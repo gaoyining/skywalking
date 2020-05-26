@@ -19,16 +19,14 @@
 package org.apache.skywalking.oap.server.core.alarm.provider;
 
 import com.google.gson.Gson;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import io.netty.handler.codec.http.HttpHeaderValues;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -42,8 +40,6 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Use SkyWalking alarm webhook API call a remote endpoints.
- *
- * @author wusheng
  */
 public class WebhookCallback implements AlarmCallback {
     private static final Logger logger = LoggerFactory.getLogger(WebhookCallback.class);
@@ -51,27 +47,28 @@ public class WebhookCallback implements AlarmCallback {
     private static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 1000;
     private static final int HTTP_SOCKET_TIMEOUT = 10000;
 
-    private List<String> remoteEndpoints;
+    private AlarmRulesWatcher alarmRulesWatcher;
     private RequestConfig requestConfig;
     private Gson gson = new Gson();
 
-    public WebhookCallback(List<String> remoteEndpoints) {
-        this.remoteEndpoints = remoteEndpoints;
+    public WebhookCallback(AlarmRulesWatcher alarmRulesWatcher) {
+        this.alarmRulesWatcher = alarmRulesWatcher;
         requestConfig = RequestConfig.custom()
-            .setConnectTimeout(HTTP_CONNECT_TIMEOUT)
-            .setConnectionRequestTimeout(HTTP_CONNECTION_REQUEST_TIMEOUT)
-            .setSocketTimeout(HTTP_SOCKET_TIMEOUT).build();
+                                     .setConnectTimeout(HTTP_CONNECT_TIMEOUT)
+                                     .setConnectionRequestTimeout(HTTP_CONNECTION_REQUEST_TIMEOUT)
+                                     .setSocketTimeout(HTTP_SOCKET_TIMEOUT)
+                                     .build();
     }
 
     @Override
     public void doAlarm(List<AlarmMessage> alarmMessage) {
-        if (remoteEndpoints.size() == 0) {
+        if (alarmRulesWatcher.getWebHooks().size() == 0) {
             return;
         }
 
         CloseableHttpClient httpClient = HttpClients.custom().build();
         try {
-            remoteEndpoints.forEach(url -> {
+            alarmRulesWatcher.getWebHooks().forEach(url -> {
                 HttpPost post = new HttpPost(url);
                 post.setConfig(requestConfig);
                 post.setHeader(HttpHeaders.ACCEPT, HttpHeaderValues.APPLICATION_JSON.toString());
@@ -88,8 +85,6 @@ public class WebhookCallback implements AlarmCallback {
                     }
                 } catch (UnsupportedEncodingException e) {
                     logger.error("Alarm to JSON error, " + e.getMessage(), e);
-                } catch (ClientProtocolException e) {
-                    logger.error("send alarm to " + url + " failure.", e);
                 } catch (IOException e) {
                     logger.error("send alarm to " + url + " failure.", e);
                 }
